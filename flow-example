@@ -1,0 +1,961 @@
+[
+    {
+        "id": "749bbf90.6fd7b",
+        "type": "subflow",
+        "name": "Tasmota-Telemetry",
+        "info": "Converts Tasmota telemetry messages from MQTT to individual outputs.\n\nThe throttled outputs assume a 300 second telemetry interval to smooth the output to one message per 15 minutes.\nFor graphing, the Power output state is sent as 0 for Off and 1 for On.\n\nUnthrottled outputs are meant for static Displays on the UI, they may need refinement to be used for graphs.",
+        "category": "",
+        "in": [
+            {
+                "x": 40,
+                "y": 420,
+                "wires": [
+                    {
+                        "id": "805ddcb7.ca716"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1220,
+                "y": 180,
+                "wires": [
+                    {
+                        "id": "58d345f5.2a025c",
+                        "port": 0
+                    },
+                    {
+                        "id": "3ed1882c.4205a8",
+                        "port": 1
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 220,
+                "wires": [
+                    {
+                        "id": "a941b71d.cff778",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 260,
+                "wires": [
+                    {
+                        "id": "969a9ca.237736",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 300,
+                "wires": [
+                    {
+                        "id": "4e7cdfb1.bbef4",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 340,
+                "wires": [
+                    {
+                        "id": "658168a3.fba2c8",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 380,
+                "wires": [
+                    {
+                        "id": "e7f33167.fdc99",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 420,
+                "wires": [
+                    {
+                        "id": "f3439c59.96567",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 460,
+                "wires": [
+                    {
+                        "id": "2cb6eb5a.14e3e4",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 500,
+                "wires": [
+                    {
+                        "id": "adacf2db.4cf65",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 540,
+                "wires": [
+                    {
+                        "id": "f4950d4c.f4ca6",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 580,
+                "wires": [
+                    {
+                        "id": "e8de4b09.f4d878",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 620,
+                "wires": [
+                    {
+                        "id": "32447da7.899022",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 660,
+                "wires": [
+                    {
+                        "id": "f0471e53.beaa5",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "inputLabels": [
+            "MQTT-Telemetry Input"
+        ],
+        "outputLabels": [
+            "Power-State - Numeric-for-Graph (1msg/15min or state-change)",
+            "Vcc - Numeric (1msg/15min)",
+            "WiFi-Signal - Numeric % (1msg/15min)",
+            "Timestamp - String",
+            "Uptime - String",
+            "SleepMode-Type - String",
+            "SleepTime - Numeric",
+            "Load Average - Numeric",
+            "WiFi-AP - Numeric",
+            "WiFi-Signal - Numeric",
+            "WiFi-SSId - String",
+            "WiFi-Channel - Numeric",
+            "WiFi-BSSId - Network-Address"
+        ],
+        "icon": "node-red/switch.png"
+    },
+    {
+        "id": "805ddcb7.ca716",
+        "type": "json",
+        "z": "749bbf90.6fd7b",
+        "name": "To JSON",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 140,
+        "y": 420,
+        "wires": [
+            [
+                "eedd4b74.8c57e8",
+                "344a83fe.77f65c",
+                "37fbd2f6.92b5de",
+                "658168a3.fba2c8",
+                "e7f33167.fdc99",
+                "f3439c59.96567",
+                "2cb6eb5a.14e3e4",
+                "e8de4b09.f4d878",
+                "adacf2db.4cf65",
+                "32447da7.899022",
+                "4e7cdfb1.bbef4",
+                "f0471e53.beaa5",
+                "f4950d4c.f4ca6"
+            ]
+        ]
+    },
+    {
+        "id": "eedd4b74.8c57e8",
+        "type": "function",
+        "z": "749bbf90.6fd7b",
+        "name": "Filter: Power",
+        "func": "if ( msg.payload.POWER == \"ON\" ) {\n    var PowerOut = { topic: msg.name + '-Power', payload: 1 };\n    return PowerOut;\n} else if ( msg.payload.POWER == \"OFF\" ) {\n    var PowerOut = { topic: msg.name + '-Power', payload: 0 };\n    return PowerOut;\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 370,
+        "y": 180,
+        "wires": [
+            [
+                "3ed1882c.4205a8"
+            ]
+        ]
+    },
+    {
+        "id": "3ed1882c.4205a8",
+        "type": "function",
+        "z": "749bbf90.6fd7b",
+        "name": "Bypass limit if new power state",
+        "func": "if (context.get(msg.topic) == msg.payload) {\n    return [ msg, null ];\n} else {\n    context.set(msg.topic, msg.payload);\n    return [ null, msg ];\n}\n",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 610,
+        "y": 180,
+        "wires": [
+            [
+                "58d345f5.2a025c"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "58d345f5.2a025c",
+        "type": "delay",
+        "z": "749bbf90.6fd7b",
+        "name": "",
+        "pauseType": "timed",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "15",
+        "rateUnits": "minute",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "x": 960,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "344a83fe.77f65c",
+        "type": "function",
+        "z": "749bbf90.6fd7b",
+        "name": "Filter: Vcc",
+        "func": "if ( msg.payload.Vcc !== 'undefined' ) {\n    var VccOut = { topic: msg.name + '-Vcc', payload: msg.payload.Vcc };\n    return VccOut;\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 360,
+        "y": 220,
+        "wires": [
+            [
+                "38e61cee.94c1b4"
+            ]
+        ]
+    },
+    {
+        "id": "38e61cee.94c1b4",
+        "type": "smooth",
+        "z": "749bbf90.6fd7b",
+        "name": "",
+        "property": "payload",
+        "action": "mean",
+        "count": "3",
+        "round": "3",
+        "mult": "single",
+        "x": 620,
+        "y": 220,
+        "wires": [
+            [
+                "a941b71d.cff778"
+            ]
+        ]
+    },
+    {
+        "id": "37fbd2f6.92b5de",
+        "type": "function",
+        "z": "749bbf90.6fd7b",
+        "name": "Filter: Signal",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.RSSI) {\n    var SignalOut = { topic: msg.name + '-WLAN-Signal', payload: msg.payload.Wifi.RSSI };\n    return SignalOut;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 370,
+        "y": 260,
+        "wires": [
+            [
+                "47a856db.ed52f8"
+            ]
+        ]
+    },
+    {
+        "id": "47a856db.ed52f8",
+        "type": "smooth",
+        "z": "749bbf90.6fd7b",
+        "name": "",
+        "property": "payload",
+        "action": "mean",
+        "count": "3",
+        "round": "3",
+        "mult": "single",
+        "x": 620,
+        "y": 260,
+        "wires": [
+            [
+                "969a9ca.237736"
+            ]
+        ]
+    },
+    {
+        "id": "a941b71d.cff778",
+        "type": "delay",
+        "z": "749bbf90.6fd7b",
+        "name": "",
+        "pauseType": "timed",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "15",
+        "rateUnits": "minute",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "x": 960,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "969a9ca.237736",
+        "type": "delay",
+        "z": "749bbf90.6fd7b",
+        "name": "",
+        "pauseType": "timed",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "15",
+        "rateUnits": "minute",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "x": 960,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4e7cdfb1.bbef4",
+        "type": "function",
+        "z": "749bbf90.6fd7b",
+        "name": "Filter: Time",
+        "func": "if (msg.payload.Time) {\n    var TimeOut = { topic: msg.name + '-Time', payload: msg.payload.Time };\n    return TimeOut;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 370,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "658168a3.fba2c8",
+        "type": "function",
+        "z": "749bbf90.6fd7b",
+        "name": "Filter: Uptime",
+        "func": "if (msg.payload.Uptime) {\n    var TimeOut = { topic: msg.name + '-Uptime', payload: msg.payload.Uptime };\n    return TimeOut;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 370,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e7f33167.fdc99",
+        "type": "function",
+        "z": "749bbf90.6fd7b",
+        "name": "Filter: SleepMode",
+        "func": "if (msg.payload.SleepMode) {\n    var TimeOut = { topic: msg.name + '-SleepMode', payload: msg.payload.SleepMode };\n    return TimeOut;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f3439c59.96567",
+        "type": "function",
+        "z": "749bbf90.6fd7b",
+        "name": "Filter: Sleep",
+        "func": "if (msg.payload.Sleep) {\n    var TimeOut = { topic: msg.name + '-Sleep', payload: msg.payload.Sleep };\n    return TimeOut;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 370,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2cb6eb5a.14e3e4",
+        "type": "function",
+        "z": "749bbf90.6fd7b",
+        "name": "Filter: LoadAvg",
+        "func": "if (msg.payload.LoadAvg) {\n    var TimeOut = { topic: msg.name + '-LoadAvg', payload: msg.payload.LoadAvg };\n    return TimeOut;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 380,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e8de4b09.f4d878",
+        "type": "function",
+        "z": "749bbf90.6fd7b",
+        "name": "Filter: Wifi SSId",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.SSId) {\n    var SignalOut = { topic: msg.name + '-WLAN-SSId', payload: msg.payload.Wifi.SSId };\n    return SignalOut;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 380,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "adacf2db.4cf65",
+        "type": "function",
+        "z": "749bbf90.6fd7b",
+        "name": "Filter: Wifi.AP",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.AP) {\n    var SignalOut = { topic: msg.name + '-WLAN-AP', payload: msg.payload.Wifi.AP };\n    return SignalOut;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 380,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "32447da7.899022",
+        "type": "function",
+        "z": "749bbf90.6fd7b",
+        "name": "Filter: Wifi Channel",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.Channel) {\n    var SignalOut = { topic: msg.name + '-WLAN-Channel', payload: msg.payload.Wifi.Channel };\n    return SignalOut;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 620,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f4950d4c.f4ca6",
+        "type": "function",
+        "z": "749bbf90.6fd7b",
+        "name": "Filter: Wifi Signal",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.RSSI) {\n    var SignalOut = { topic: msg.name + '-WLAN-Signal', payload: msg.payload.Wifi.RSSI };\n    return SignalOut;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f0471e53.beaa5",
+        "type": "function",
+        "z": "749bbf90.6fd7b",
+        "name": "Filter: Wifi BSSId",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.BSSId) {\n    var SignalOut = { topic: msg.name + '-WLAN-BSSId', payload: msg.payload.Wifi.BSSId };\n    return SignalOut;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7282b9b6.8e6338",
+        "type": "ui_chart",
+        "z": "ad485551.944d98",
+        "name": "",
+        "group": "510eefd8.2850d",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "label": "Relais (24h)",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "step",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "24",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#ff8000",
+            "#aec7e8",
+            "#0080ff",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 890,
+        "y": 140,
+        "wires": [
+            [
+                "a5e7c798.6b97f8"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "37cc61cb.bf2c3e",
+        "type": "ui_chart",
+        "z": "ad485551.944d98",
+        "name": "",
+        "group": "510eefd8.2850d",
+        "order": 2,
+        "width": "6",
+        "height": "4",
+        "label": "Vcc (24h)",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "bezier",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "24",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#ff8000",
+            "#aec7e8",
+            "#0080ff",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 880,
+        "y": 200,
+        "wires": [
+            [
+                "4530f946.d384a8"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "5c32f261.ce889c",
+        "type": "ui_chart",
+        "z": "ad485551.944d98",
+        "name": "",
+        "group": "510eefd8.2850d",
+        "order": 3,
+        "width": "6",
+        "height": "4",
+        "label": "WLAN-Signal (24h)",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "bezier",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "24",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#ff8000",
+            "#aec7e8",
+            "#0080ff",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 910,
+        "y": 260,
+        "wires": [
+            [
+                "50ad2e4a.c05f8"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "1af09515.8f50fb",
+        "type": "ui_text",
+        "z": "ad485551.944d98",
+        "group": "33960bd7.113704",
+        "order": 2,
+        "width": "6",
+        "height": "1",
+        "name": "",
+        "label": "Letzte Meldung:",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "x": 900,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "853ff99e.1748a8",
+        "type": "ui_text",
+        "z": "ad485551.944d98",
+        "group": "33960bd7.113704",
+        "order": 3,
+        "width": "6",
+        "height": "1",
+        "name": "",
+        "label": "Laufzeit:",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "x": 880,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "70b6fdf5.5d5564",
+        "type": "ui_text",
+        "z": "ad485551.944d98",
+        "group": "33960bd7.113704",
+        "order": 4,
+        "width": "4",
+        "height": "1",
+        "name": "",
+        "label": "Schlafmodus:",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "x": 900,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "fd00c4a.a68ec38",
+        "type": "ui_text",
+        "z": "ad485551.944d98",
+        "group": "33960bd7.113704",
+        "order": 6,
+        "width": "4",
+        "height": "1",
+        "name": "",
+        "label": "Schlafzeit:",
+        "format": "{{msg.payload}}ms",
+        "layout": "row-left",
+        "x": 890,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "a53716f3.5e3948",
+        "type": "ui_text",
+        "z": "ad485551.944d98",
+        "group": "33960bd7.113704",
+        "order": 5,
+        "width": "2",
+        "height": "2",
+        "name": "",
+        "label": "CPU-Last:",
+        "format": "{{msg.payload}}%",
+        "layout": "col-center",
+        "x": 890,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "a3c07196.daf58",
+        "type": "ui_text",
+        "z": "ad485551.944d98",
+        "group": "33960bd7.113704",
+        "order": 7,
+        "width": "1",
+        "height": "1",
+        "name": "",
+        "label": "AP:",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "x": 870,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "eeddacb.dea0f5",
+        "type": "ui_text",
+        "z": "ad485551.944d98",
+        "group": "33960bd7.113704",
+        "order": 9,
+        "width": "3",
+        "height": "1",
+        "name": "",
+        "label": "Signalstärke:",
+        "format": "{{msg.payload}}%",
+        "layout": "row-right",
+        "x": 890,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "dda45436.47c478",
+        "type": "ui_text",
+        "z": "ad485551.944d98",
+        "group": "33960bd7.113704",
+        "order": 10,
+        "width": "6",
+        "height": "1",
+        "name": "",
+        "label": "Netzwerk:",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "x": 880,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "4e4e453a.c0f65c",
+        "type": "ui_text",
+        "z": "ad485551.944d98",
+        "group": "33960bd7.113704",
+        "order": 8,
+        "width": "2",
+        "height": "1",
+        "name": "",
+        "label": "Kanal:",
+        "format": "{{msg.payload}}",
+        "layout": "row-right",
+        "x": 870,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "ad9cc535.b654f8",
+        "type": "ui_text",
+        "z": "ad485551.944d98",
+        "group": "33960bd7.113704",
+        "order": 11,
+        "width": "6",
+        "height": "1",
+        "name": "",
+        "label": "MAC:",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "x": 870,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "35115834.abaa28",
+        "type": "subflow:749bbf90.6fd7b",
+        "z": "ad485551.944d98",
+        "name": "",
+        "x": 610,
+        "y": 360,
+        "wires": [
+            [
+                "7282b9b6.8e6338"
+            ],
+            [
+                "37cc61cb.bf2c3e"
+            ],
+            [
+                "5c32f261.ce889c"
+            ],
+            [
+                "1af09515.8f50fb"
+            ],
+            [
+                "853ff99e.1748a8"
+            ],
+            [
+                "70b6fdf5.5d5564"
+            ],
+            [
+                "fd00c4a.a68ec38"
+            ],
+            [
+                "a53716f3.5e3948"
+            ],
+            [
+                "a3c07196.daf58"
+            ],
+            [
+                "eeddacb.dea0f5"
+            ],
+            [
+                "dda45436.47c478"
+            ],
+            [
+                "4e4e453a.c0f65c"
+            ],
+            [
+                "ad9cc535.b654f8"
+            ]
+        ]
+    },
+    {
+        "id": "bbef3b5f.cab238",
+        "type": "change",
+        "z": "ad485551.944d98",
+        "name": "Name: Sonoff-001",
+        "rules": [
+            {
+                "t": "set",
+                "p": "name",
+                "pt": "msg",
+                "to": "Sonoff-001",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 390,
+        "y": 340,
+        "wires": [
+            [
+                "35115834.abaa28"
+            ]
+        ]
+    },
+    {
+        "id": "fbb9783.41be388",
+        "type": "mqtt in",
+        "z": "ad485551.944d98",
+        "name": "tele/Sonoff-001/STATE",
+        "topic": "tele/Sonoff-001/STATE",
+        "qos": "2",
+        "broker": "97142318.4a21c",
+        "x": 140,
+        "y": 340,
+        "wires": [
+            [
+                "bbef3b5f.cab238"
+            ]
+        ]
+    },
+    {
+        "id": "547af596.4f26dc",
+        "type": "mqtt in",
+        "z": "ad485551.944d98",
+        "name": "stat/Sonoff-001/RESULT",
+        "topic": "stat/Sonoff-001/RESULT",
+        "qos": "2",
+        "broker": "97142318.4a21c",
+        "x": 150,
+        "y": 280,
+        "wires": [
+            [
+                "bbef3b5f.cab238"
+            ]
+        ]
+    },
+    {
+        "id": "510eefd8.2850d",
+        "type": "ui_group",
+        "z": "",
+        "name": "Statistik",
+        "tab": "d6ce6af9.f20c98",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": true
+    },
+    {
+        "id": "33960bd7.113704",
+        "type": "ui_group",
+        "z": "",
+        "name": "Sonoff-001",
+        "tab": "d6ce6af9.f20c98",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": true
+    },
+    {
+        "id": "97142318.4a21c",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "Main",
+        "broker": "127.0.0.1",
+        "port": "1883",
+        "clientid": "Raspberry",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "d6ce6af9.f20c98",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Test",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
