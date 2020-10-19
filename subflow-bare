@@ -150,14 +150,45 @@
                         "port": 0
                     }
                 ]
+            },
+            {
+                "x": 1220,
+                "y": 700,
+                "wires": [
+                    {
+                        "id": "8c2e5ee0.a1515",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 740,
+                "wires": [
+                    {
+                        "id": "3ed1882c.4205a8",
+                        "port": 1
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 780,
+                "wires": [
+                    {
+                        "id": "e0564bb2.3ef008",
+                        "port": 0
+                    }
+                ]
             }
         ],
+        "env": [],
         "inputLabels": [
             "MQTT-Telemetry Input"
         ],
         "outputLabels": [
-            "Power-State - Numeric-for-Graph (1msg/15min or state-change)",
-            "Vcc - Numeric (1msg/15min)",
+            "Power-State - true/false (1msg/15min or state-change)",
+            "UptimeSeconds - Numeric (1msg/15min)",
             "WiFi-Signal - Numeric % (1msg/15min)",
             "Timestamp - String",
             "Uptime - String",
@@ -168,7 +199,10 @@
             "WiFi-Signal - Numeric",
             "WiFi-SSId - String",
             "WiFi-Channel - Numeric",
-            "WiFi-BSSId - Network-Address"
+            "WiFi-BSSId - Network-Address",
+            "Load Average - Numeric (1msg/15min)",
+            "Power-State - true/false",
+            "Power-State - true/false (1msg/1min or state-change)"
         ],
         "icon": "node-red/switch.png"
     },
@@ -205,7 +239,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Power",
-        "func": "if ( msg.payload.POWER == \"ON\" ) {\n    var PowerOut = { topic: msg.name + '-Power', payload: 1 };\n    return PowerOut;\n} else if ( msg.payload.POWER == \"OFF\" ) {\n    var PowerOut = { topic: msg.name + '-Power', payload: 0 };\n    return PowerOut;\n}",
+        "func": "if ( msg.payload.POWER == \"ON\" ) {\n    var PowerOut = { topic: msg.name, title: msg.name + '-Power', payload: true };\n    return PowerOut;\n} else if ( msg.payload.POWER == \"OFF\" ) {\n    var PowerOut = { topic: msg.name, title: msg.name + '-Power', payload: false };\n    return PowerOut;\n}",
         "outputs": 1,
         "noerr": 0,
         "x": 370,
@@ -230,7 +264,9 @@
             [
                 "58d345f5.2a025c"
             ],
-            []
+            [
+                "e0564bb2.3ef008"
+            ]
         ]
     },
     {
@@ -258,29 +294,11 @@
         "id": "344a83fe.77f65c",
         "type": "function",
         "z": "749bbf90.6fd7b",
-        "name": "Filter: Vcc",
-        "func": "if ( msg.payload.Vcc !== 'undefined' ) {\n    var VccOut = { topic: msg.name + '-Vcc', payload: msg.payload.Vcc };\n    return VccOut;\n}",
+        "name": "Filter: UptimeSec",
+        "func": "if ( msg.payload.UptimeSec !== 'undefined' ) {\n    var VccOut = { topic: msg.name, title: msg.name + '-UpSec', payload: msg.payload.UptimeSec };\n    return VccOut;\n}",
         "outputs": 1,
         "noerr": 0,
-        "x": 360,
-        "y": 220,
-        "wires": [
-            [
-                "38e61cee.94c1b4"
-            ]
-        ]
-    },
-    {
-        "id": "38e61cee.94c1b4",
-        "type": "smooth",
-        "z": "749bbf90.6fd7b",
-        "name": "",
-        "property": "payload",
-        "action": "mean",
-        "count": "3",
-        "round": "3",
-        "mult": "single",
-        "x": 620,
+        "x": 390,
         "y": 220,
         "wires": [
             [
@@ -293,7 +311,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Signal",
-        "func": "if (msg.payload.Wifi && msg.payload.Wifi.RSSI) {\n    var SignalOut = { topic: msg.name + '-WLAN-Signal', payload: msg.payload.Wifi.RSSI };\n    return SignalOut;\n}\n",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.RSSI) {\n    var SignalOut = { topic: msg.name, title: msg.name + '-WLAN-Signal', payload: msg.payload.Wifi.RSSI };\n    return SignalOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 370,
@@ -313,7 +331,7 @@
         "action": "mean",
         "count": "3",
         "round": "3",
-        "mult": "single",
+        "mult": "multi",
         "x": 620,
         "y": 260,
         "wires": [
@@ -369,7 +387,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Time",
-        "func": "if (msg.payload.Time) {\n    var TimeOut = { topic: msg.name + '-Time', payload: msg.payload.Time };\n    return TimeOut;\n}\n",
+        "func": "if (msg.payload.Time) {\n    var TimeOut = { topic: msg.name, title: msg.name + '-Time', payload: msg.payload.Time };\n    return TimeOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 370,
@@ -383,7 +401,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Uptime",
-        "func": "if (msg.payload.Uptime) {\n    var TimeOut = { topic: msg.name + '-Uptime', payload: msg.payload.Uptime };\n    return TimeOut;\n}\n",
+        "func": "if (msg.payload.Uptime) {\n    var TimeOut = { topic: msg.name, title: msg.name + '-Uptime', payload: msg.payload.Uptime };\n    return TimeOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 370,
@@ -397,7 +415,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: SleepMode",
-        "func": "if (msg.payload.SleepMode) {\n    var TimeOut = { topic: msg.name + '-SleepMode', payload: msg.payload.SleepMode };\n    return TimeOut;\n}\n",
+        "func": "if (msg.payload.SleepMode) {\n    var TimeOut = { topic: msg.name, title: msg.name + '-SleepMode', payload: msg.payload.SleepMode };\n    return TimeOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 390,
@@ -411,7 +429,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Sleep",
-        "func": "if (msg.payload.Sleep) {\n    var TimeOut = { topic: msg.name + '-Sleep', payload: msg.payload.Sleep };\n    return TimeOut;\n}\n",
+        "func": "if (msg.payload.Sleep) {\n    var TimeOut = { topic: msg.name, title: msg.name + '-Sleep', payload: msg.payload.Sleep };\n    return TimeOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 370,
@@ -425,13 +443,15 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: LoadAvg",
-        "func": "if (msg.payload.LoadAvg) {\n    var TimeOut = { topic: msg.name + '-LoadAvg', payload: msg.payload.LoadAvg };\n    return TimeOut;\n}\n",
+        "func": "if (msg.payload.LoadAvg) {\n    var TimeOut = { topic: msg.name, title: msg.name + '-LoadAvg', payload: msg.payload.LoadAvg };\n    return TimeOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 380,
         "y": 460,
         "wires": [
-            []
+            [
+                "2bd0a70.6f0ca5a"
+            ]
         ]
     },
     {
@@ -439,7 +459,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Wifi SSId",
-        "func": "if (msg.payload.Wifi && msg.payload.Wifi.SSId) {\n    var SignalOut = { topic: msg.name + '-WLAN-SSId', payload: msg.payload.Wifi.SSId };\n    return SignalOut;\n}\n",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.SSId) {\n    var SignalOut = { topic: msg.name, title: msg.name + '-WLAN-SSId', payload: msg.payload.Wifi.SSId };\n    return SignalOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 380,
@@ -453,7 +473,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Wifi.AP",
-        "func": "if (msg.payload.Wifi && msg.payload.Wifi.AP) {\n    var SignalOut = { topic: msg.name + '-WLAN-AP', payload: msg.payload.Wifi.AP };\n    return SignalOut;\n}\n",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.AP) {\n    var SignalOut = { topic: msg.name, title: msg.name + '-WLAN-AP', payload: msg.payload.Wifi.AP };\n    return SignalOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 380,
@@ -467,7 +487,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Wifi Channel",
-        "func": "if (msg.payload.Wifi && msg.payload.Wifi.Channel) {\n    var SignalOut = { topic: msg.name + '-WLAN-Channel', payload: msg.payload.Wifi.Channel };\n    return SignalOut;\n}\n",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.Channel) {\n    var SignalOut = { topic: msg.name, title: msg.name + '-WLAN-Channel', payload: msg.payload.Wifi.Channel };\n    return SignalOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 390,
@@ -481,7 +501,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Wifi Signal",
-        "func": "if (msg.payload.Wifi && msg.payload.Wifi.RSSI) {\n    var SignalOut = { topic: msg.name + '-WLAN-Signal', payload: msg.payload.Wifi.RSSI };\n    return SignalOut;\n}\n",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.RSSI) {\n    var SignalOut = { topic: msg.name, title: msg.name + '-WLAN-Signal', payload: msg.payload.Wifi.RSSI };\n    return SignalOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 390,
@@ -495,11 +515,70 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Wifi BSSId",
-        "func": "if (msg.payload.Wifi && msg.payload.Wifi.BSSId) {\n    var SignalOut = { topic: msg.name + '-WLAN-BSSId', payload: msg.payload.Wifi.BSSId };\n    return SignalOut;\n}\n",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.BSSId) {\n    var SignalOut = { topic: msg.name, title: msg.name + '-WLAN-BSSId', payload: msg.payload.Wifi.BSSId };\n    return SignalOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 390,
         "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8c2e5ee0.a1515",
+        "type": "delay",
+        "z": "749bbf90.6fd7b",
+        "name": "",
+        "pauseType": "timed",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "15",
+        "rateUnits": "minute",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "x": 960,
+        "y": 700,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2bd0a70.6f0ca5a",
+        "type": "smooth",
+        "z": "749bbf90.6fd7b",
+        "name": "",
+        "property": "payload",
+        "action": "mean",
+        "count": "3",
+        "round": "3",
+        "mult": "multi",
+        "x": 680,
+        "y": 700,
+        "wires": [
+            [
+                "8c2e5ee0.a1515"
+            ]
+        ]
+    },
+    {
+        "id": "e0564bb2.3ef008",
+        "type": "trigger",
+        "z": "749bbf90.6fd7b",
+        "op1": "",
+        "op2": "false",
+        "op1type": "pay",
+        "op2type": "bool",
+        "duration": "-1",
+        "extend": true,
+        "units": "min",
+        "reset": "",
+        "bytopic": "topic",
+        "name": "Trigger & Repeat",
+        "x": 930,
+        "y": 780,
         "wires": [
             []
         ]

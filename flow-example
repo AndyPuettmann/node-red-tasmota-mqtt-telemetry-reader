@@ -150,14 +150,45 @@
                         "port": 0
                     }
                 ]
+            },
+            {
+                "x": 1220,
+                "y": 700,
+                "wires": [
+                    {
+                        "id": "8c2e5ee0.a1515",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 740,
+                "wires": [
+                    {
+                        "id": "3ed1882c.4205a8",
+                        "port": 1
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 780,
+                "wires": [
+                    {
+                        "id": "e0564bb2.3ef008",
+                        "port": 0
+                    }
+                ]
             }
         ],
+        "env": [],
         "inputLabels": [
             "MQTT-Telemetry Input"
         ],
         "outputLabels": [
-            "Power-State - Numeric-for-Graph (1msg/15min or state-change)",
-            "Vcc - Numeric (1msg/15min)",
+            "Power-State - true/false (1msg/15min or state-change)",
+            "UptimeSeconds - Numeric (1msg/15min)",
             "WiFi-Signal - Numeric % (1msg/15min)",
             "Timestamp - String",
             "Uptime - String",
@@ -168,7 +199,10 @@
             "WiFi-Signal - Numeric",
             "WiFi-SSId - String",
             "WiFi-Channel - Numeric",
-            "WiFi-BSSId - Network-Address"
+            "WiFi-BSSId - Network-Address",
+            "Load Average - Numeric (1msg/15min)",
+            "Power-State - true/false",
+            "Power-State - true/false (1msg/1min or state-change)"
         ],
         "icon": "node-red/switch.png"
     },
@@ -205,7 +239,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Power",
-        "func": "if ( msg.payload.POWER == \"ON\" ) {\n    var PowerOut = { topic: msg.name + '-Power', payload: 1 };\n    return PowerOut;\n} else if ( msg.payload.POWER == \"OFF\" ) {\n    var PowerOut = { topic: msg.name + '-Power', payload: 0 };\n    return PowerOut;\n}",
+        "func": "if ( msg.payload.POWER == \"ON\" ) {\n    var PowerOut = { topic: msg.name, title: msg.name + '-Power', payload: true };\n    return PowerOut;\n} else if ( msg.payload.POWER == \"OFF\" ) {\n    var PowerOut = { topic: msg.name, title: msg.name + '-Power', payload: false };\n    return PowerOut;\n}",
         "outputs": 1,
         "noerr": 0,
         "x": 370,
@@ -230,7 +264,9 @@
             [
                 "58d345f5.2a025c"
             ],
-            []
+            [
+                "e0564bb2.3ef008"
+            ]
         ]
     },
     {
@@ -258,29 +294,11 @@
         "id": "344a83fe.77f65c",
         "type": "function",
         "z": "749bbf90.6fd7b",
-        "name": "Filter: Vcc",
-        "func": "if ( msg.payload.Vcc !== 'undefined' ) {\n    var VccOut = { topic: msg.name + '-Vcc', payload: msg.payload.Vcc };\n    return VccOut;\n}",
+        "name": "Filter: UptimeSec",
+        "func": "if ( msg.payload.UptimeSec !== 'undefined' ) {\n    var VccOut = { topic: msg.name, title: msg.name + '-UpSec', payload: msg.payload.UptimeSec };\n    return VccOut;\n}",
         "outputs": 1,
         "noerr": 0,
-        "x": 360,
-        "y": 220,
-        "wires": [
-            [
-                "38e61cee.94c1b4"
-            ]
-        ]
-    },
-    {
-        "id": "38e61cee.94c1b4",
-        "type": "smooth",
-        "z": "749bbf90.6fd7b",
-        "name": "",
-        "property": "payload",
-        "action": "mean",
-        "count": "3",
-        "round": "3",
-        "mult": "single",
-        "x": 620,
+        "x": 390,
         "y": 220,
         "wires": [
             [
@@ -293,7 +311,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Signal",
-        "func": "if (msg.payload.Wifi && msg.payload.Wifi.RSSI) {\n    var SignalOut = { topic: msg.name + '-WLAN-Signal', payload: msg.payload.Wifi.RSSI };\n    return SignalOut;\n}\n",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.RSSI) {\n    var SignalOut = { topic: msg.name, title: msg.name + '-WLAN-Signal', payload: msg.payload.Wifi.RSSI };\n    return SignalOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 370,
@@ -313,7 +331,7 @@
         "action": "mean",
         "count": "3",
         "round": "3",
-        "mult": "single",
+        "mult": "multi",
         "x": 620,
         "y": 260,
         "wires": [
@@ -369,7 +387,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Time",
-        "func": "if (msg.payload.Time) {\n    var TimeOut = { topic: msg.name + '-Time', payload: msg.payload.Time };\n    return TimeOut;\n}\n",
+        "func": "if (msg.payload.Time) {\n    var TimeOut = { topic: msg.name, title: msg.name + '-Time', payload: msg.payload.Time };\n    return TimeOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 370,
@@ -383,7 +401,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Uptime",
-        "func": "if (msg.payload.Uptime) {\n    var TimeOut = { topic: msg.name + '-Uptime', payload: msg.payload.Uptime };\n    return TimeOut;\n}\n",
+        "func": "if (msg.payload.Uptime) {\n    var TimeOut = { topic: msg.name, title: msg.name + '-Uptime', payload: msg.payload.Uptime };\n    return TimeOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 370,
@@ -397,7 +415,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: SleepMode",
-        "func": "if (msg.payload.SleepMode) {\n    var TimeOut = { topic: msg.name + '-SleepMode', payload: msg.payload.SleepMode };\n    return TimeOut;\n}\n",
+        "func": "if (msg.payload.SleepMode) {\n    var TimeOut = { topic: msg.name, title: msg.name + '-SleepMode', payload: msg.payload.SleepMode };\n    return TimeOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 390,
@@ -411,7 +429,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Sleep",
-        "func": "if (msg.payload.Sleep) {\n    var TimeOut = { topic: msg.name + '-Sleep', payload: msg.payload.Sleep };\n    return TimeOut;\n}\n",
+        "func": "if (msg.payload.Sleep) {\n    var TimeOut = { topic: msg.name, title: msg.name + '-Sleep', payload: msg.payload.Sleep };\n    return TimeOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 370,
@@ -425,13 +443,15 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: LoadAvg",
-        "func": "if (msg.payload.LoadAvg) {\n    var TimeOut = { topic: msg.name + '-LoadAvg', payload: msg.payload.LoadAvg };\n    return TimeOut;\n}\n",
+        "func": "if (msg.payload.LoadAvg) {\n    var TimeOut = { topic: msg.name, title: msg.name + '-LoadAvg', payload: msg.payload.LoadAvg };\n    return TimeOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 380,
         "y": 460,
         "wires": [
-            []
+            [
+                "2bd0a70.6f0ca5a"
+            ]
         ]
     },
     {
@@ -439,7 +459,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Wifi SSId",
-        "func": "if (msg.payload.Wifi && msg.payload.Wifi.SSId) {\n    var SignalOut = { topic: msg.name + '-WLAN-SSId', payload: msg.payload.Wifi.SSId };\n    return SignalOut;\n}\n",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.SSId) {\n    var SignalOut = { topic: msg.name, title: msg.name + '-WLAN-SSId', payload: msg.payload.Wifi.SSId };\n    return SignalOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 380,
@@ -453,7 +473,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Wifi.AP",
-        "func": "if (msg.payload.Wifi && msg.payload.Wifi.AP) {\n    var SignalOut = { topic: msg.name + '-WLAN-AP', payload: msg.payload.Wifi.AP };\n    return SignalOut;\n}\n",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.AP) {\n    var SignalOut = { topic: msg.name, title: msg.name + '-WLAN-AP', payload: msg.payload.Wifi.AP };\n    return SignalOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 380,
@@ -467,7 +487,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Wifi Channel",
-        "func": "if (msg.payload.Wifi && msg.payload.Wifi.Channel) {\n    var SignalOut = { topic: msg.name + '-WLAN-Channel', payload: msg.payload.Wifi.Channel };\n    return SignalOut;\n}\n",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.Channel) {\n    var SignalOut = { topic: msg.name, title: msg.name + '-WLAN-Channel', payload: msg.payload.Wifi.Channel };\n    return SignalOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 390,
@@ -481,7 +501,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Wifi Signal",
-        "func": "if (msg.payload.Wifi && msg.payload.Wifi.RSSI) {\n    var SignalOut = { topic: msg.name + '-WLAN-Signal', payload: msg.payload.Wifi.RSSI };\n    return SignalOut;\n}\n",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.RSSI) {\n    var SignalOut = { topic: msg.name, title: msg.name + '-WLAN-Signal', payload: msg.payload.Wifi.RSSI };\n    return SignalOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 390,
@@ -495,7 +515,7 @@
         "type": "function",
         "z": "749bbf90.6fd7b",
         "name": "Filter: Wifi BSSId",
-        "func": "if (msg.payload.Wifi && msg.payload.Wifi.BSSId) {\n    var SignalOut = { topic: msg.name + '-WLAN-BSSId', payload: msg.payload.Wifi.BSSId };\n    return SignalOut;\n}\n",
+        "func": "if (msg.payload.Wifi && msg.payload.Wifi.BSSId) {\n    var SignalOut = { topic: msg.name, title: msg.name + '-WLAN-BSSId', payload: msg.payload.Wifi.BSSId };\n    return SignalOut;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 390,
@@ -505,141 +525,112 @@
         ]
     },
     {
-        "id": "7282b9b6.8e6338",
-        "type": "ui_chart",
-        "z": "ad485551.944d98",
+        "id": "8c2e5ee0.a1515",
+        "type": "delay",
+        "z": "749bbf90.6fd7b",
         "name": "",
-        "group": "510eefd8.2850d",
-        "order": 1,
-        "width": "6",
-        "height": "4",
-        "label": "Relais (24h)",
-        "chartType": "line",
-        "legend": "true",
-        "xformat": "HH:mm:ss",
-        "interpolate": "step",
-        "nodata": "",
-        "dot": false,
-        "ymin": "",
-        "ymax": "",
-        "removeOlder": "24",
-        "removeOlderPoints": "",
-        "removeOlderUnit": "3600",
-        "cutout": 0,
-        "useOneColor": false,
-        "colors": [
-            "#ff8000",
-            "#aec7e8",
-            "#0080ff",
-            "#2ca02c",
-            "#98df8a",
-            "#d62728",
-            "#ff9896",
-            "#9467bd",
-            "#c5b0d5"
-        ],
-        "useOldStyle": false,
-        "x": 890,
-        "y": 140,
+        "pauseType": "timed",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "15",
+        "rateUnits": "minute",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "x": 960,
+        "y": 700,
         "wires": [
-            [
-                "a5e7c798.6b97f8"
-            ],
             []
         ]
     },
     {
-        "id": "37cc61cb.bf2c3e",
-        "type": "ui_chart",
-        "z": "ad485551.944d98",
+        "id": "2bd0a70.6f0ca5a",
+        "type": "smooth",
+        "z": "749bbf90.6fd7b",
         "name": "",
-        "group": "510eefd8.2850d",
-        "order": 2,
-        "width": "6",
-        "height": "4",
-        "label": "Vcc (24h)",
-        "chartType": "line",
-        "legend": "true",
-        "xformat": "HH:mm:ss",
-        "interpolate": "bezier",
-        "nodata": "",
-        "dot": false,
-        "ymin": "",
-        "ymax": "",
-        "removeOlder": "24",
-        "removeOlderPoints": "",
-        "removeOlderUnit": "3600",
-        "cutout": 0,
-        "useOneColor": false,
-        "colors": [
-            "#ff8000",
-            "#aec7e8",
-            "#0080ff",
-            "#2ca02c",
-            "#98df8a",
-            "#d62728",
-            "#ff9896",
-            "#9467bd",
-            "#c5b0d5"
-        ],
-        "useOldStyle": false,
-        "x": 880,
-        "y": 200,
+        "property": "payload",
+        "action": "mean",
+        "count": "3",
+        "round": "3",
+        "mult": "multi",
+        "x": 680,
+        "y": 700,
         "wires": [
             [
-                "4530f946.d384a8"
-            ],
+                "8c2e5ee0.a1515"
+            ]
+        ]
+    },
+    {
+        "id": "e0564bb2.3ef008",
+        "type": "trigger",
+        "z": "749bbf90.6fd7b",
+        "op1": "",
+        "op2": "false",
+        "op1type": "pay",
+        "op2type": "bool",
+        "duration": "-1",
+        "extend": true,
+        "units": "min",
+        "reset": "",
+        "bytopic": "topic",
+        "name": "Trigger & Repeat",
+        "x": 930,
+        "y": 780,
+        "wires": [
             []
         ]
     },
     {
-        "id": "5c32f261.ce889c",
-        "type": "ui_chart",
-        "z": "ad485551.944d98",
+        "id": "7a07c9c.9b5ff38",
+        "type": "subflow:749bbf90.6fd7b",
+        "z": "5854932d.cc04ec",
         "name": "",
-        "group": "510eefd8.2850d",
-        "order": 3,
-        "width": "6",
-        "height": "4",
-        "label": "WLAN-Signal (24h)",
-        "chartType": "line",
-        "legend": "true",
-        "xformat": "HH:mm:ss",
-        "interpolate": "bezier",
-        "nodata": "",
-        "dot": false,
-        "ymin": "",
-        "ymax": "",
-        "removeOlder": "24",
-        "removeOlderPoints": "",
-        "removeOlderUnit": "3600",
-        "cutout": 0,
-        "useOneColor": false,
-        "colors": [
-            "#ff8000",
-            "#aec7e8",
-            "#0080ff",
-            "#2ca02c",
-            "#98df8a",
-            "#d62728",
-            "#ff9896",
-            "#9467bd",
-            "#c5b0d5"
-        ],
-        "useOldStyle": false,
-        "x": 910,
-        "y": 260,
+        "x": 1030,
+        "y": 500,
         "wires": [
+            [],
+            [],
+            [],
             [
-                "50ad2e4a.c05f8"
+                "95acc8be.9d9998"
             ],
+            [
+                "1e6a7f31.4d9111"
+            ],
+            [
+                "cde69eb4.ff9e2"
+            ],
+            [
+                "e7e13868.f37ef8"
+            ],
+            [
+                "a7a0df1b.a7391"
+            ],
+            [
+                "2d60dedb.14d262"
+            ],
+            [
+                "d25cc0b1.66ab7"
+            ],
+            [
+                "f295141b.605698"
+            ],
+            [
+                "bd11ab3b.f3cde8"
+            ],
+            [],
+            [],
+            [],
             []
         ]
     },
     {
-        "id": "1af09515.8f50fb",
+        "id": "95acc8be.9d9998",
         "type": "ui_text",
-        "z": "ad485551.944d98",
+        "z": "5854932d.cc04ec",
         "group": "33960bd7.113704",
         "order": 2,
         "width": "6",
@@ -648,14 +639,14 @@
         "label": "Letzte Meldung:",
         "format": "{{msg.payload}}",
         "layout": "row-left",
-        "x": 900,
-        "y": 320,
+        "x": 1500,
+        "y": 420,
         "wires": []
     },
     {
-        "id": "853ff99e.1748a8",
+        "id": "1e6a7f31.4d9111",
         "type": "ui_text",
-        "z": "ad485551.944d98",
+        "z": "5854932d.cc04ec",
         "group": "33960bd7.113704",
         "order": 3,
         "width": "6",
@@ -664,14 +655,14 @@
         "label": "Laufzeit:",
         "format": "{{msg.payload}}",
         "layout": "row-left",
-        "x": 880,
-        "y": 360,
+        "x": 1480,
+        "y": 460,
         "wires": []
     },
     {
-        "id": "70b6fdf5.5d5564",
+        "id": "cde69eb4.ff9e2",
         "type": "ui_text",
-        "z": "ad485551.944d98",
+        "z": "5854932d.cc04ec",
         "group": "33960bd7.113704",
         "order": 4,
         "width": "4",
@@ -680,14 +671,14 @@
         "label": "Schlafmodus:",
         "format": "{{msg.payload}}",
         "layout": "row-left",
-        "x": 900,
-        "y": 400,
+        "x": 1500,
+        "y": 500,
         "wires": []
     },
     {
-        "id": "fd00c4a.a68ec38",
+        "id": "e7e13868.f37ef8",
         "type": "ui_text",
-        "z": "ad485551.944d98",
+        "z": "5854932d.cc04ec",
         "group": "33960bd7.113704",
         "order": 6,
         "width": "4",
@@ -696,14 +687,14 @@
         "label": "Schlafzeit:",
         "format": "{{msg.payload}}ms",
         "layout": "row-left",
-        "x": 890,
-        "y": 480,
+        "x": 1490,
+        "y": 580,
         "wires": []
     },
     {
-        "id": "a53716f3.5e3948",
+        "id": "a7a0df1b.a7391",
         "type": "ui_text",
-        "z": "ad485551.944d98",
+        "z": "5854932d.cc04ec",
         "group": "33960bd7.113704",
         "order": 5,
         "width": "2",
@@ -712,14 +703,14 @@
         "label": "CPU-Last:",
         "format": "{{msg.payload}}%",
         "layout": "col-center",
-        "x": 890,
-        "y": 440,
+        "x": 1490,
+        "y": 540,
         "wires": []
     },
     {
-        "id": "a3c07196.daf58",
+        "id": "2d60dedb.14d262",
         "type": "ui_text",
-        "z": "ad485551.944d98",
+        "z": "5854932d.cc04ec",
         "group": "33960bd7.113704",
         "order": 7,
         "width": "1",
@@ -728,30 +719,30 @@
         "label": "AP:",
         "format": "{{msg.payload}}",
         "layout": "row-left",
-        "x": 870,
-        "y": 520,
+        "x": 1690,
+        "y": 420,
         "wires": []
     },
     {
-        "id": "eeddacb.dea0f5",
+        "id": "d25cc0b1.66ab7",
         "type": "ui_text",
-        "z": "ad485551.944d98",
+        "z": "5854932d.cc04ec",
         "group": "33960bd7.113704",
         "order": 9,
         "width": "3",
         "height": "1",
         "name": "",
-        "label": "Signalst√§rke:",
+        "label": "Signalst‰rke:",
         "format": "{{msg.payload}}%",
         "layout": "row-right",
-        "x": 890,
-        "y": 600,
+        "x": 1710,
+        "y": 500,
         "wires": []
     },
     {
-        "id": "dda45436.47c478",
+        "id": "f295141b.605698",
         "type": "ui_text",
-        "z": "ad485551.944d98",
+        "z": "5854932d.cc04ec",
         "group": "33960bd7.113704",
         "order": 10,
         "width": "6",
@@ -760,14 +751,14 @@
         "label": "Netzwerk:",
         "format": "{{msg.payload}}",
         "layout": "row-left",
-        "x": 880,
-        "y": 700,
+        "x": 1700,
+        "y": 540,
         "wires": []
     },
     {
-        "id": "4e4e453a.c0f65c",
+        "id": "bd11ab3b.f3cde8",
         "type": "ui_text",
-        "z": "ad485551.944d98",
+        "z": "5854932d.cc04ec",
         "group": "33960bd7.113704",
         "order": 8,
         "width": "2",
@@ -776,79 +767,14 @@
         "label": "Kanal:",
         "format": "{{msg.payload}}",
         "layout": "row-right",
-        "x": 870,
-        "y": 560,
+        "x": 1690,
+        "y": 460,
         "wires": []
     },
     {
-        "id": "ad9cc535.b654f8",
-        "type": "ui_text",
-        "z": "ad485551.944d98",
-        "group": "33960bd7.113704",
-        "order": 11,
-        "width": "6",
-        "height": "1",
-        "name": "",
-        "label": "MAC:",
-        "format": "{{msg.payload}}",
-        "layout": "row-left",
-        "x": 870,
-        "y": 780,
-        "wires": []
-    },
-    {
-        "id": "35115834.abaa28",
-        "type": "subflow:749bbf90.6fd7b",
-        "z": "ad485551.944d98",
-        "name": "",
-        "x": 610,
-        "y": 360,
-        "wires": [
-            [
-                "7282b9b6.8e6338"
-            ],
-            [
-                "37cc61cb.bf2c3e"
-            ],
-            [
-                "5c32f261.ce889c"
-            ],
-            [
-                "1af09515.8f50fb"
-            ],
-            [
-                "853ff99e.1748a8"
-            ],
-            [
-                "70b6fdf5.5d5564"
-            ],
-            [
-                "fd00c4a.a68ec38"
-            ],
-            [
-                "a53716f3.5e3948"
-            ],
-            [
-                "a3c07196.daf58"
-            ],
-            [
-                "eeddacb.dea0f5"
-            ],
-            [
-                "dda45436.47c478"
-            ],
-            [
-                "4e4e453a.c0f65c"
-            ],
-            [
-                "ad9cc535.b654f8"
-            ]
-        ]
-    },
-    {
-        "id": "bbef3b5f.cab238",
+        "id": "6dc5f54e.7c43cc",
         "type": "change",
-        "z": "ad485551.944d98",
+        "z": "5854932d.cc04ec",
         "name": "Name: Sonoff-001",
         "rules": [
             {
@@ -864,64 +790,64 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 390,
-        "y": 340,
+        "x": 630,
+        "y": 540,
         "wires": [
             [
-                "35115834.abaa28"
+                "7a07c9c.9b5ff38",
+                "db4e2216.e5cfd"
             ]
         ]
     },
     {
-        "id": "fbb9783.41be388",
+        "id": "b3eb1c41.279f",
         "type": "mqtt in",
-        "z": "ad485551.944d98",
-        "name": "tele/Sonoff-001/STATE",
-        "topic": "tele/Sonoff-001/STATE",
-        "qos": "2",
-        "broker": "97142318.4a21c",
-        "x": 140,
-        "y": 340,
-        "wires": [
-            [
-                "bbef3b5f.cab238"
-            ]
-        ]
-    },
-    {
-        "id": "547af596.4f26dc",
-        "type": "mqtt in",
-        "z": "ad485551.944d98",
+        "z": "5854932d.cc04ec",
         "name": "stat/Sonoff-001/RESULT",
         "topic": "stat/Sonoff-001/RESULT",
-        "qos": "2",
+        "qos": "1",
         "broker": "97142318.4a21c",
-        "x": 150,
-        "y": 280,
+        "x": 190,
+        "y": 480,
         "wires": [
             [
-                "bbef3b5f.cab238"
+                "6dc5f54e.7c43cc"
             ]
         ]
     },
     {
-        "id": "510eefd8.2850d",
-        "type": "ui_group",
-        "z": "",
-        "name": "Statistik",
-        "tab": "d6ce6af9.f20c98",
-        "order": 1,
-        "disp": true,
-        "width": "6",
-        "collapse": true
+        "id": "aea22edc.159e6",
+        "type": "mqtt in",
+        "z": "5854932d.cc04ec",
+        "name": "tele/Sonoff-001/STATE",
+        "topic": "tele/Sonoff-001/STATE",
+        "qos": "1",
+        "broker": "97142318.4a21c",
+        "x": 180,
+        "y": 540,
+        "wires": [
+            [
+                "6dc5f54e.7c43cc"
+            ]
+        ]
+    },
+    {
+        "id": "569eec28.484af4",
+        "type": "comment",
+        "z": "5854932d.cc04ec",
+        "name": "TV-Schlafzimmer - Sonoff-001",
+        "info": "",
+        "x": 200,
+        "y": 400,
+        "wires": []
     },
     {
         "id": "33960bd7.113704",
         "type": "ui_group",
         "z": "",
         "name": "Sonoff-001",
-        "tab": "d6ce6af9.f20c98",
-        "order": 2,
+        "tab": "d7fa5297.63d28",
+        "order": 3,
         "disp": true,
         "width": "6",
         "collapse": true
@@ -949,12 +875,12 @@
         "willPayload": ""
     },
     {
-        "id": "d6ce6af9.f20c98",
+        "id": "d7fa5297.63d28",
         "type": "ui_tab",
         "z": "",
-        "name": "Test",
+        "name": "Diagnosedaten",
         "icon": "dashboard",
-        "order": 1,
+        "order": 3,
         "disabled": false,
         "hidden": false
     }
